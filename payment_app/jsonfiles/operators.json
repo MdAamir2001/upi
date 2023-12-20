@@ -1,0 +1,7 @@
+[
+  {"name": "Jio prepaid", "type": "Prepaid", "iconPath": "assets/images/jio_icon.png"},
+  {"name": "Airtel prepaid", "type": "Prepaid", "iconPath": "assets/images/airtel_icon.png"},
+  {"name": "Vi prepaid", "type": "Prepaid", "iconPath": "assets/images/vi_icon.png"},
+  {"name": "BSNL prepaid", "type": "Prepaid", "iconPath": "assets/images/bsnl_icon.png"},
+  {"name": "MTNL Delhi prepaid", "type": "Prepaid", "iconPath": "assets/images/mtnl_icon.png"}
+]
