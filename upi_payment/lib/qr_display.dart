@@ -20,32 +20,32 @@ class QRDisplayPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Scan QR for Payment'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            QrImageView(
-              data: qrData,
-              version: QrVersions.auto,
-              size: 200.0,
-            ),
-            // SizedBox(height: 20.0),
-            // Text(
-            //   'UPI ID: $upiId',
-            //   style: TextStyle(fontSize: 20.0),
-            // ),
-            // Text(
-            //   'Amount: $amount',
-            //   style: TextStyle(fontSize: 20.0),
-            // ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                _launchUPIPayment(qrData);
-              },
-              child: Text('Scan QR for Payment'),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white30, Colors.blueGrey],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              QrImageView(
+                data: qrData,
+                version: QrVersions.auto,
+                size: 200.0,
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  _launchUPIPayment(qrData);
+                },
+                child: Text('Scan QR for Payment'),
+              ),
+            ],
+          ),
         ),
       ),
     );

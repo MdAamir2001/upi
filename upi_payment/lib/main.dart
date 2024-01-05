@@ -1,9 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'authenticate_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FirebaseOptions firebaseOptions = FirebaseOptions(
+    apiKey: 'AIzaSyAKKEY3jwuOg-Mi5_QIGi-3JuDorfbn-vI',
+    authDomain: 'upipayment-823f0.firebaseapp.com',
+    projectId: 'upipayment-823f0',
+    storageBucket: 'https://console.firebase.google.com/u/0/project/upipayment-823f0/storage/upipayment-823f0.appspot.com/files',
+    messagingSenderId: '1057524534539',
+    appId: '1:1057524534539:android:6be73a3e1b5f22c374260e',
+  );
+  await Firebase.initializeApp(options: firebaseOptions);
   runApp(UPISplashScreen());
 }
 
@@ -26,20 +36,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Color _backgroundColor = Colors.blue; // Initial background color
-  bool _colorChanged = false; // Flag to control color change
+  Color _backgroundColor = Colors.blueGrey;
+  bool _colorChanged = false;
 
   @override
   void initState() {
     super.initState();
     // Simulating color change after a delay of 3 seconds
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 2), () {
       setState(() {
-        _backgroundColor = Colors.white30; // Change to desired color
-        _colorChanged = true; // Update flag
-
-        // Navigate to the next page after 4 seconds
-        Timer(Duration(seconds: 1), () {
+        _backgroundColor = Colors.white54;
+        _colorChanged = true;
+        Timer(Duration(seconds: 2), () {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => AuthScreen()),
@@ -52,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor, // Use the dynamic background color
+      backgroundColor: _backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -63,18 +71,10 @@ class _SplashScreenState extends State<SplashScreen> {
               'UPI Payments',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // if (_colorChanged)
-            //   Text(
-            //     'Background Color Changed!',
-            //     style: TextStyle(
-            //       color: Colors.white,
-            //       fontSize: 18,
-            //     ),
-            //   ),
           ],
         ),
       ),

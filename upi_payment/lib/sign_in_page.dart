@@ -25,9 +25,11 @@ class SignInForm extends StatefulWidget {
   _SignInFormState createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeInAnimation;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -61,8 +63,6 @@ class _SignInFormState extends State<SignInForm> {
           email: email,
           password: password,
         );
-
-        // User signed in successfully, navigate to dashboard
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -94,37 +94,78 @@ class _SignInFormState extends State<SignInForm> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+
+    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+
+    // Start the animation when the widget is ready
+    _animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      body: Stack(
         children: [
-          TextFormField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
+          // Background decoration
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white30, Colors.blueGrey],
+              ),
             ),
-            validator: _validateEmail,
           ),
-          SizedBox(height: 20.0),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(),
+          // Animated form
+          FadeTransition(
+            opacity: _fadeInAnimation,
+            child: Container(
+              padding: EdgeInsets.all(20.0),
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: _validateEmail,
+                        ),
+                        SizedBox(height: 20.0),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: _validatePassword,
+                        ),
+                        SizedBox(height: 20.0),
+                        ElevatedButton(
+                          onPressed: _submit,
+                          child: Text('Sign In'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            validator: _validatePassword,
-          ),
-          SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: _submit,
-            child: Text('Sign In'),
           ),
         ],
       ),
@@ -135,6 +176,7 @@ class _SignInFormState extends State<SignInForm> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 }

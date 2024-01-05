@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
-
 class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,6 +11,13 @@ class SignUpPage extends StatelessWidget {
         title: Text('Sign Up'),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white30, Colors.blueGrey],
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: SignUpForm(),
@@ -26,7 +32,10 @@ class SignUpForm extends StatefulWidget {
   _SignUpFormState createState() => _SignUpFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> {
+class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeInAnimation;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -35,7 +44,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance; // Initialize Firestore
-
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
@@ -91,39 +99,90 @@ class _SignUpFormState extends State<SignUpForm> {
             // Add more fields as needed
           });
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Dashboard(
-                email: email,
-                password: password,
-                auth: _auth,
-              ),
-            ),
-          );
+          _showSuccessDialog(); // Show success pop-up
         }
       } catch (e) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('$e'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog(e.toString()); // Show error pop-up
       }
     }
   }
 
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Signup Successful'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.done,
+                size: 50,
+                color: Colors.green,
+              ),
+              SizedBox(height: 10),
+              Text('Congratulations! Your signup was successful.'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Dashboard(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text.trim(),
+                      auth: _auth,
+                    ),
+                  ),
+                );
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+
+    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+
+    // Start the animation when the widget is ready
+    _animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +245,7 @@ class _SignUpFormState extends State<SignUpForm> {
     _emailController.dispose();
     _passwordController.dispose();
     _phoneController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 }

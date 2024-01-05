@@ -17,7 +17,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _buttonHeight = 60.0;
     });
     Future.delayed(Duration(milliseconds: 300), () {
-      // Navigating to SignInPage after the animation completes
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SignInPage()),
@@ -31,7 +30,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _buttonHeight = 60.0;
     });
     Future.delayed(Duration(milliseconds: 300), () {
-      // Navigating to SignUpPage after the animation completes
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SignUpPage()),
@@ -44,42 +42,123 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('Sign In / Sign Up')),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/Images/bank.jpg', width: 100, height: 100,),
+          )
+        ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/Images/signin.jpg'), // Replace with your image asset
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                width: _buttonWidth,
-                height: _buttonHeight,
-                child: ElevatedButton(
-                  onPressed: _animateButton,
-                  child: Text('Sign In'),
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/Images/UPI.png'),
+                fit: BoxFit.fill,
               ),
-              SizedBox(height: 20.0),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                width: _buttonWidth,
-                height: _buttonHeight,
-                child: ElevatedButton(
-                  onPressed: _animateSignUpButton,
-                  child: Text('Sign Up'),
-                ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: _buttonWidth,
+                    height: _buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: _animateButton,
+                      child: Text('Sign In'),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: _buttonWidth,
+                    height: _buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: _animateSignUpButton,
+                      child: Text('Sign Up'),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCustomIconButton(Icons.mail_outline_outlined, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInPage()),
+                        );
+                      }),
+                      _buildCustomIconButton(Icons.facebook_outlined, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInPage()),
+                        );
+                      }),
+                      _buildCustomIconButton(Icons.camera_alt, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInPage()),
+                        );
+                      }),
+                      _buildCustomIconButton(Icons.apple_rounded, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInPage()),
+                        );
+                      }),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            bottom: 20.0,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.copyright_rounded),
+                  onPressed: () {
+                    // Add functionality for copyright button
+                  },
+                ),
+                Text(
+                  'Since 2023',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 20.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+Widget _buildCustomIconButton(IconData icon, VoidCallback onPressed) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.blueGrey, // Change to your desired background color
+      borderRadius: BorderRadius.circular(8.0),
+    ),
+    padding: EdgeInsets.all(8.0),
+    child: IconButton(
+      icon: Icon(
+        icon,
+        size: 30, // Change the icon size as needed
+        color: Colors.white, // Change the icon color as needed
+      ),
+      onPressed: onPressed,
+    ),
+  );
 }

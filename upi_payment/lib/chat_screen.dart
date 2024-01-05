@@ -1,116 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class ChatScreen extends StatefulWidget {
-  final String userId;
-  final String userName;
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  ChatScreen({required this.userId, required this.userName});
-
-  @override
-  State<StatefulWidget> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  late String currentUser;
-  late String otherUser;
-  late Stream<QuerySnapshot> messagesStream;
-
-  final TextEditingController messageController = TextEditingController();
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    getUserInformation();
-    messagesStream = firestore
-        .collection('chats')
-        .doc(_getChatId())
-        .collection('messages')
-        .orderBy('timestamp')
-        .snapshots();
-  }
-
-  void getUserInformation() async {
-    User? user = auth.currentUser;
-    if (user != null) {
-      currentUser = user.uid; // Current user ID
-      otherUser = widget.userId; // Set the other user ID from the selected user
-    } else {
-      // Handle no signed-in user
-    }
-  }
-
-  void _sendMessage(String text) {
-    firestore.collection('chats').doc(_getChatId()).collection('messages').add({
-      'text': text,
-      'sender': currentUser,
-      'timestamp': DateTime.now(),
-    });
-  }
-
-  String _getChatId() {
-    List<String> users = [currentUser, otherUser];
-    users.sort();
-    return users.join('_');
-  }
-
+class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with ${widget.userName}'),
+        title: Text('Chatbot'),
       ),
       body: Column(
-        children: <Widget>[
+        children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: messagesStream,
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                List<QueryDocumentSnapshot> messages = snapshot.data!.docs;
-                return ListView.builder(
-                  itemCount: messages.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Map<String, dynamic> message = messages[index].data() as Map<String, dynamic>;
-                    bool isCurrentUser = message['sender'] == currentUser;
-                    return ListTile(
-                      title: Text(
-                        message['text'],
-                        textAlign: isCurrentUser ? TextAlign.end : TextAlign.start,
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+            child: ChatMessages(),
           ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
+          BottomAppBar(
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter your message...',
-                    ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: MessageInputField(), // Separate widget for input field
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    if (messageController.text.isNotEmpty) {
-                      _sendMessage(messageController.text);
-                      messageController.clear();
-                    }
-                  },
                 ),
               ],
             ),
@@ -119,4 +33,107 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+}
+
+class ChatMessages extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('messages').orderBy('timestamp').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var message = snapshot.data!.docs[index];
+              return ListTile(
+                title: Text(message['content']),
+                subtitle: Text(message['sender']),
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+}
+
+class MessageInputField extends StatefulWidget {
+  @override
+  _MessageInputFieldState createState() => _MessageInputFieldState();
+}
+
+class _MessageInputFieldState extends State<MessageInputField> {
+  final TextEditingController _messageController = TextEditingController();
+
+  void _sendMessage() async {
+    String messageText = _messageController.text.trim();
+    if (messageText.isNotEmpty) {
+      // Get the current user (sender)
+      String senderId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Assuming you have a receiver ID for demonstration purposes
+      String receiverId = 'receiverUserId'; // Replace this with actual receiver ID
+
+      // Create a timestamp for the message
+      Timestamp timestamp = Timestamp.now();
+
+      // Store the message in the sender's database
+      FirebaseFirestore.instance.collection('users').doc(senderId).collection('messages').add({
+        'content': messageText,
+        'sender': senderId,
+        'receiver': receiverId,
+        'timestamp': timestamp,
+      });
+
+      // Store the message in the receiver's database
+      FirebaseFirestore.instance.collection('users').doc(receiverId).collection('messages').add({
+        'content': messageText,
+        'sender': senderId,
+        'receiver': receiverId,
+        'timestamp': timestamp,
+      });
+
+      // Clear the text field after sending the message
+      _messageController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: TextFormField(
+        controller: _messageController,
+        decoration: InputDecoration(
+          hintText: 'Type a message...',
+          suffixIcon: IconButton(
+            icon: Icon(Icons.send),
+            onPressed: _sendMessage,
+          ),
+        ),
+        // Implement sending messages to Firestore on form submission
+        onFieldSubmitted: (value) {
+          _sendMessage();
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    title: 'Chatbot App',
+    home: ChatScreen(),
+  ));
 }
