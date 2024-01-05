@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:upi_payment/sign_up_page.dart';
 import 'dashboard.dart';
-
 
 class SignInPage extends StatelessWidget {
   @override
@@ -30,6 +31,8 @@ class _SignInFormState extends State<SignInForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter an email';
@@ -48,25 +51,49 @@ class _SignInFormState extends State<SignInForm> {
     return null;
   }
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
-      // Implement your sign-in logic here
-      // For demonstration, printing the user details
-      print('Email: $email');
-      print('Password: $password');
+      try {
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Dashboard(email: email, password: password),
-        ),
-      );
+        // User signed in successfully, navigate to dashboard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Dashboard(email: email, password: password, auth: _auth,),
+          ),
+        );
+      } catch (e) {
+        // If sign-in fails, display an error message
+        print('$e');
+        // Navigate to the signup page for new users
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

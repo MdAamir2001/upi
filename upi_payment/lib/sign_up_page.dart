@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+
 
 class SignUpPage extends StatelessWidget {
   @override
@@ -30,11 +33,14 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance; // Initialize Firestore
+
+
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a username';
     }
-    // You can add additional username validation rules here if needed
     return null;
   }
 
@@ -65,23 +71,59 @@ class _SignUpFormState extends State<SignUpForm> {
     return null;
   }
 
-
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
-      String username = _usernameController.text.trim();
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
-      String phoneNumber = _phoneController.text.trim();
 
-      print('Username: $username');
-      print('Email: $email');
-      print('Password: $password');
-      print('Phone Number: $phoneNumber');
+      try {
+        UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard(email: email, password: password)));
+        if (userCredential.user != null) {
+          await _firestore.collection('users').doc(userCredential.user!.uid).set({
+            'username': _usernameController.text.trim(),
+            'email': email,
+            'phoneNumber': _phoneController.text.trim(),
+            // Add more fields as needed
+          });
 
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Dashboard(
+                email: email,
+                password: password,
+                auth: _auth,
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
