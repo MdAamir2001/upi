@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:upi_payment/MobileOtp.dart';
+import 'package:upi_payment/google_sign_in.dart';
 import 'sign_in_page.dart';
 import 'sign_up_page.dart';
 
@@ -45,7 +47,11 @@ class _AuthScreenState extends State<AuthScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/Images/bank.jpg', width: 100, height: 100,),
+            child: Image.asset(
+              'assets/Images/1.jpg',
+              width: 100,
+              height: 100,
+            ),
           )
         ],
       ),
@@ -55,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Images/UPI.png'),
+                image: AssetImage('assets/Images/2.jpg'),
                 fit: BoxFit.fill,
               ),
             ),
@@ -87,16 +93,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildCustomIconButton(Icons.mail_outline_outlined, () {
+                      _buildCustomIconButton(Icons.phone_android_outlined, () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignInPage()),
+                          MaterialPageRoute(builder: (context) => MyPhone()),
                         );
                       }),
-                      _buildCustomIconButton(Icons.facebook_outlined, () {
+                      _buildCustomIconButton(Icons.mail_lock, () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignInPage()),
+                          MaterialPageRoute(builder: (context) => GoogleSignInScreen()),
                         );
                       }),
                       _buildCustomIconButton(Icons.camera_alt, () {

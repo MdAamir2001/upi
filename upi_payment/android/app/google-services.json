@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1057524534539",
+    "project_id": "upipayment-823f0",
+    "storage_bucket": "upipayment-823f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057524534539:android:6be73a3e1b5f22c374260e",
+        "android_client_info": {
+          "package_name": "com.example.upi_payment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057524534539-777mvtabr82fri6mvqem4qdhliodap6f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.upi_payment",
+            "certificate_hash": "fef1e13e3dcd57c563a7e65168c5cbbc40f7b6c3"
+          }
+        },
+        {
+          "client_id": "1057524534539-168ah72lksmkis6lv0ss4kbcompea8md.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKKEY3jwuOg-Mi5_QIGi-3JuDorfbn-vI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057524534539-168ah72lksmkis6lv0ss4kbcompea8md.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

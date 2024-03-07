@@ -32,7 +32,8 @@ class SignUpForm extends StatefulWidget {
   _SignUpFormState createState() => _SignUpFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateMixin {
+class _SignUpFormState extends State<SignUpForm>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeInAnimation;
 
@@ -43,7 +44,8 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
   final TextEditingController _phoneController = TextEditingController();
 
   FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance; // Initialize Firestore
+  FirebaseFirestore _firestore =
+      FirebaseFirestore.instance; // Initialize Firestore
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
@@ -86,13 +88,16 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
 
       try {
         UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
+            await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
 
         if (userCredential.user != null) {
-          await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          await _firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .set({
             'username': _usernameController.text.trim(),
             'email': email,
             'phoneNumber': _phoneController.text.trim(),
@@ -200,7 +205,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
             ),
             validator: _validateUsername,
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 8.0),
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
@@ -209,7 +214,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
             ),
             validator: _validateEmail,
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 8.0),
           TextFormField(
             controller: _passwordController,
             obscureText: true,
@@ -219,17 +224,15 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
             ),
             validator: _validatePassword,
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 8.0),
           TextFormField(
             controller: _phoneController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              labelText: 'Phone Number',
-              border: OutlineInputBorder(),
-            ),
+                labelText: 'Phone Number', enabledBorder: OutlineInputBorder()),
             validator: _validatePhone,
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 8.0),
           ElevatedButton(
             onPressed: _submit,
             child: Text('Sign Up'),

@@ -12,7 +12,7 @@ class SignInPage extends StatelessWidget {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(0.0),
           child: SignInForm(),
         ),
       ),
@@ -25,7 +25,8 @@ class SignInForm extends StatefulWidget {
   _SignInFormState createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateMixin {
+class _SignInFormState extends State<SignInForm>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeInAnimation;
 
@@ -66,7 +67,11 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Dashboard(email: email, password: password, auth: _auth,),
+            builder: (context) => Dashboard(
+              email: email,
+              password: password,
+              auth: _auth,
+            ),
           ),
         );
       } catch (e) {
@@ -82,7 +87,8 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SignUpPage()));
                   },
                   child: Text('OK'),
                 ),

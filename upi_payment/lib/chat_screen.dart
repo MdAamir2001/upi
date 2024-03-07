@@ -10,7 +10,9 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chatbot'),
+        title: Text(
+          'Chatbot',
+        ),
       ),
       body: Column(
         children: [
@@ -23,7 +25,8 @@ class ChatScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: MessageInputField(), // Separate widget for input field
+                    child:
+                        MessageInputField(), // Separate widget for input field
                   ),
                 ),
               ],
@@ -39,7 +42,10 @@ class ChatMessages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('messages').orderBy('timestamp').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('messages')
+          .orderBy('timestamp')
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -77,13 +83,18 @@ class _MessageInputFieldState extends State<MessageInputField> {
       String senderId = FirebaseAuth.instance.currentUser!.uid;
 
       // Assuming you have a receiver ID for demonstration purposes
-      String receiverId = 'receiverUserId'; // Replace this with actual receiver ID
+      String receiverId =
+          'receiverUserId'; // Replace this with actual receiver ID
 
       // Create a timestamp for the message
       Timestamp timestamp = Timestamp.now();
 
       // Store the message in the sender's database
-      FirebaseFirestore.instance.collection('users').doc(senderId).collection('messages').add({
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .collection('messages')
+          .add({
         'content': messageText,
         'sender': senderId,
         'receiver': receiverId,
@@ -91,7 +102,11 @@ class _MessageInputFieldState extends State<MessageInputField> {
       });
 
       // Store the message in the receiver's database
-      FirebaseFirestore.instance.collection('users').doc(receiverId).collection('messages').add({
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(receiverId)
+          .collection('messages')
+          .add({
         'content': messageText,
         'sender': senderId,
         'receiver': receiverId,
