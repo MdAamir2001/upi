@@ -1,0 +1,1077 @@
+import 'dart:ui';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:easy_debounce/easy_debounce.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:provider/provider.dart';
+import 'package:upi_plugin/backend/api_requests/resuable_functions.dart';
+import 'package:upi_plugin/pay_to_contacts/search_by_nameor_number1/search_by_nameor_number1_widget.dart';
+import 'package:upi_plugin/pay_to_self/q_r_generator/q_r_generator_widget.dart';
+import 'package:upi_plugin/util/strings.dart';
+import 'package:uuid/uuid.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '../../../flutter_flow/custom_functions.dart';
+import '../receiving_from_details_display/receiving_from_details_display_widget.dart';
+import 'enter_link_details_model.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
+export 'enter_link_details_model.dart';
+class EnterLinkDetailsWidget extends StatefulWidget {
+  final bool isReqForUPIPinReset;final bool isReqForUPINumberCreated;final bool isReqForUPINumberLink;final bool isReqForMoney;final String? typeOfRequest;
+  const EnterLinkDetailsWidget({
+    Key? key,bool? isReqForUPIPinReset,bool? isReqForUPINumberCreated,bool? isReqForUPINumberLink, bool? isReqForMoney,
+    this.typeOfRequest,
+  })  : this.isReqForUPIPinReset = isReqForUPIPinReset ?? false,
+        this.isReqForUPINumberCreated = isReqForUPINumberCreated ?? false,
+        this.isReqForUPINumberLink = isReqForUPINumberLink ?? false,
+        this.isReqForMoney = isReqForMoney ?? false,
+        super(key: key);
+  @override
+  _EnterLinkDetailsWidgetState createState() => _EnterLinkDetailsWidgetState();}
+class _EnterLinkDetailsWidgetState extends State<EnterLinkDetailsWidget> {
+  late EnterLinkDetailsModel _model;
+  bool isQRBottomSheet = false;bool isSMS = false;bool isValidateMobileCall = false;bool isMobileValid = false;double currentAmount = 0.0;bool enableProceedButton = false; //testing purpose to be true as bool here bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    return true;}
+  @override
+  Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+    return BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaX: 5.0,
+        sigmaY: 5.0,
+      ),
+      child: KeyboardActions(
+        autoScroll: false,
+        disableScroll: true,
+        config: KeyboardActionsConfig(
+            keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
+            actions: [
+              KeyboardActionsItem(focusNode: _model.numberFocusNode,),
+              KeyboardActionsItem(focusNode: _model.numberFocusNode1,),
+            ]),
+        child: Stack(
+          children: [
+            Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 56.0, 0.0, 0.0),
+                  child: Container(
+                    width: double.infinity,
+                    height: 348.0,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(0.0), bottomRight: Radius.circular(0.0),  topLeft: Radius.circular(40.0),   topRight: Radius.circular(40.0),
+                      ),  ),
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _model.formKey,
+                        autovalidateMode: AutovalidateMode.disabled,
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              16.0, 25.0, 16.0, 0.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                FFLocalizations.of(context).getText(
+                                  '5ivp5l8n' /* ENTER LINK DETAILS */,
+                                ),
+                                style: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: FlutterFlowTheme.of(context)
+                                          .titleSmallFamily,
+                                      letterSpacing: 1.5,
+                                      fontWeight: FontWeight.w600,
+                                      useGoogleFonts: GoogleFonts.asMap()
+                                          .containsKey(
+                                              FlutterFlowTheme.of(context)
+                                                  .titleSmallFamily),
+                                      lineHeight: 1.0,   ), ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 32.0, 0.0, 0.0),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      8.0, 0.0, 8.0, 0.0),
+                                  child: TextFormField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    controller: _model.nameTextFieldController,
+                                    onChanged: (_) => EasyDebounce.debounce(
+                                      '_model.nameTextFieldController',
+                                      Duration(milliseconds: 20),
+                                      () async {
+                                        if (_model.nameTextFieldController.text
+                                            .isNotEmpty) {
+                                          setState(() {
+                                            _model.name = _model
+                                                .nameTextFieldController.text;
+                                          });
+                                          await trackMixpanelEvent([
+                                            "FormFieldTitle",  "FormFieldValue", "FormMessage", "ErrorMessage", "ScreenType", "ScreenName","PreviousScreen"
+                                          ], [
+                                            "Enter name",
+                                            _model.nameTextFieldController.text,
+                                            widget.typeOfRequest!,
+                                            "",
+                                            "modal",
+                                            "Enter link details",
+                                            "dashboard",
+                                          ], "payments_enter_details_form_field");
+                                        } else {
+                                          setState(() {
+                                            _model.name = '';
+                                          });  }}, ),
+                                    autofocus: true,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+                                      labelText: isQRBottomSheet || isSMS
+                                          ? "Enter remarks"
+                                          : FFLocalizations.of(context).getText(
+                                              'j7hcl740' /* Enter name */,
+                                            ),
+                                      labelStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily:
+                                                FlutterFlowTheme.of(context)
+                                                    .labelMediumFamily,
+                                            color: Color(0xFF979CAE),
+                                            letterSpacing: 0.32,
+                                            fontWeight: FontWeight.w600,
+                                            useGoogleFonts: GoogleFonts.asMap()
+                                                .containsKey(
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMediumFamily),
+                                            lineHeight: 1.3,
+                                          ),
+                                      hintStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium,
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),
+                                      ),
+                                      errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFD34528),
+                                        ),
+                                      ),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          borderSide: BorderSide.none),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFD34528),
+                                        ),
+                                      ),
+                                      contentPadding:
+                                          EdgeInsetsDirectional.fromSTEB(
+                                              10.0, 0.0, 0.0, 0.0),
+                                      filled: true,
+                                      fillColor: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                    ),
+                                    style:
+                                        FlutterFlowTheme.of(context).bodyMedium,
+                                    validator: isQRBottomSheet || isSMS
+                                        ? null
+                                        : _model
+                                            .nameTextFieldControllerValidator
+                                            .asValidator(context),
+                                    inputFormatters: isQRBottomSheet
+                                        ? []
+                                        : [
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp('[A-Z a-z]'))
+                                          ],),),  ),
+                              Visibility(
+                                  visible: !isQRBottomSheet,
+                                  child: Stack(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            0.0, 16.0, 0.0, 0.0),
+                                        child: Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                            8.0,
+                                            0.0,
+                                            8.0,
+                                            0.0,
+                                          ),
+                                          child: TextFormField(
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            controller:
+                                                _model.numberTextFieldController
+                                                  ..text = _model.number,
+                                            onChanged: (_) =>
+                                                EasyDebounce.debounce(
+                                              '_model.numberTextFieldController',
+                                              Duration(milliseconds: 20),
+                                              () async {
+                                                setState(() {
+                                                  _model.number = _model
+                                                      .numberTextFieldController
+                                                      .text;
+                                                });
+                                                if (_model.number.isNotEmpty) {
+                                                  if (_model.number.length <
+                                                      10) {
+                                                    setState(() {
+                                                      isMobileValid = false;
+                                                    });
+                                                  }
+
+                                                  if (_model.number.length ==
+                                                          10 &&
+                                                      _model.number !=
+                                                          "${FFAppState().phoneNumber}") {
+                                                    var mob = _model.number;
+
+                                                    if (mob.startsWith('6') ||
+                                                        mob.startsWith('7') ||
+                                                        mob.startsWith('8') ||
+                                                        mob.startsWith('9')) {
+                                                      print('mob');
+                                                      setState(() {
+                                                        isMobileValid = true;
+                                                      });
+                                                    } else {
+                                                      print('mob1');
+
+                                                      setState(() {
+                                                        isMobileValid = false;
+                                                      });
+                                                    }
+                                                  }
+                                                  setState(() {
+                                                    _model.number = _model
+                                                        .numberTextFieldController
+                                                        .text;
+                                                  });
+                                                  await trackMixpanelEvent([
+                                                    "FormFieldTitle", "FormFieldValue","FormMessage","ErrorMessage","ScreenType","ScreenName", "PreviousScreen"
+                                                  ], [
+                                                    "Enter number",
+                                                    _model.number,
+                                                    widget.typeOfRequest!,
+                                                    "",
+                                                    "modal",
+                                                    "Enter link details",
+                                                    "dashboard",
+                                                  ], "payments_enter_details_form_field");
+                                                } else {
+                                                  setState(() {
+                                                    _model.number = '';
+                                                  });
+                                                }
+                                              },
+                                            ),
+                                            autofocus: true,
+                                            obscureText: false,
+                                            decoration: InputDecoration(
+                                              counterText: '',
+                                              labelText:
+                                                  FFLocalizations.of(context)
+                                                      .getText(
+                                                'm1mdiord' /* Enter number */,
+                                              ),
+                                              labelStyle: FlutterFlowTheme.of(
+                                                      context)
+                                                  .labelMedium
+                                                  .override(
+                                                    fontFamily:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .labelMediumFamily,
+                                                    color: Color(0xFF979CAE),
+                                                    letterSpacing: 0.32,
+                                                    fontWeight: FontWeight.w600,
+                                                    useGoogleFonts: GoogleFonts
+                                                            .asMap()
+                                                        .containsKey(
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .labelMediumFamily),
+                                                    lineHeight: 1.3,
+                                                  ),
+                                              hintStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20.0)),
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFFD34528),
+                                                ),
+                                              ),
+                                              border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                  borderSide: BorderSide.none),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20.0)),
+                                                borderSide: BorderSide(
+                                                  color: Color(0xFFD34528),
+                                                ),
+                                              ),
+                                              contentPadding:
+                                                  EdgeInsetsDirectional
+                                                      .fromSTEB(
+                                                          30.0, 0.0, 0.0, 0.0),
+                                              filled: true,
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondaryBackground,
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium,
+                                            keyboardType: TextInputType.number,
+                                            focusNode: _model.numberFocusNode,
+                                            validator: _model
+                                                .numberTextFieldControllerValidator
+                                                .asValidator(context),
+                                            inputFormatters: [
+                                              _model.numberTextFieldMask,
+                                            ],),), ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeft,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              reverseDuration: const Duration(
+                                                  milliseconds: 300),
+                                              child:
+                                                  SearchByNameorNumber1Widget(
+                                                      isCollectRequest: true),
+                                            ),
+                                          ).then((value) {
+                                            print('value $value');
+                                            setState(() {
+                                              _model.number = value;
+                                              if (_model.number.length == 10 &&
+                                                  _model.number !=
+                                                      "${FFAppState().phoneNumber}") {
+                                                var mob = _model.number;
+
+                                                if (mob.startsWith('6') ||
+                                                    mob.startsWith('7') ||
+                                                    mob.startsWith('8') ||
+                                                    mob.startsWith('9')) {
+                                                  print('mob');
+                                                  setState(() {
+                                                    isMobileValid = true;
+                                                  });
+                                                } else {
+                                                  print('mob1');
+
+                                                  setState(() {
+                                                    isMobileValid = false;
+                                                  }); } }});});},
+                                        child: Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  0.0, 16.0, 0.0, 0.0),
+                                          child: Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                8.0,
+                                                8.0,
+                                                16.0,
+                                                0.0,
+                                              ),
+                                              child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: SizedBox(
+                                                  width: 30.0,
+                                                  height: 30.0,
+                                                  child: Icon(
+                                                    Icons.contacts,
+                                                    color: Color(0xFFC7222A),
+                                                    size: 24.0,
+                                                  ),),   )),), ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: 31.5,
+                                          left: 15,
+                                        ),
+                                        child: Text(
+                                          "+91",
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium,
+                                        ),),],)),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 16.0, 0.0, 0.0),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      8.0, 0.0, 8.0, 0.0),
+                                  child: TextFormField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    controller:
+                                        _model.amountTextFieldController,
+                                    onChanged: (value) async {
+                                      if (value == "₹" && (value.length == 1)) {
+                                        setState(() {
+                                          _model.amountTextFieldController =
+                                              TextEditingController.fromValue(
+                                            TextEditingValue(
+                                              text: '',
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                offset: 0,
+                                              ),),);});}
+                                      if (_model.amountTextFieldController.text
+                                              .isEmpty ||
+                                          _model.amountTextFieldController
+                                                  .text ==
+                                              "" ||
+                                          currentAmount == 0.0) {
+                                        setState(() {
+                                          enableProceedButton = false;
+                                        });}
+                                      if (_model
+                                              .amountTextFieldController.text !=
+                                          '') {
+                                        String currencyConvert = (_model
+                                                .amountTextFieldController!.text
+                                                .contains('.'))
+                                            ? decimalDigit(_model
+                                                .amountTextFieldController.text)
+                                            : currencyFormatter(_model
+                                                .amountTextFieldController
+                                                .text);
+
+                                        print(
+                                            "currency convert $currencyConvert");
+                                        currencyConvert =
+                                            currencyConvert.replaceAll('₹', '');
+                                        if (_model.amountTextFieldController
+                                                .text !=
+                                            '') {
+                                          currencyConvert =
+                                              '₹' + currencyConvert;
+                                        }
+                                        _model.amountTextFieldController =
+                                            TextEditingController.fromValue(
+                                          TextEditingValue(
+                                            text: currencyConvert,
+                                            selection: TextSelection.collapsed(
+                                              offset: currencyConvert.length,
+                                            ),
+                                          ),
+                                        );
+                                             currentAmount = double.parse(_model
+                                            .amountTextFieldController.text
+                                            .replaceAll('₹', '')
+                                            .replaceAll(',', ''));
+                                        bool isAmountMoreThan2000 =
+                                            (currentAmount) > 2000;
+                                        bool isLessThanOne =
+                                            (currentAmount) < 1;
+                                        if (!isQRBottomSheet &&
+                                            !isSMS &&
+                                            isAmountMoreThan2000 &&
+                                            !isMobileValid &&
+                                            _model.nameTextFieldController.text
+                                                    .length <
+                                                3 &&
+                                            _model.number.length < 10 &&
+                                            _model.number ==
+                                                "${FFAppState().phoneNumber}") {
+                                          print('afasfsafs');
+                                          setState(() {
+                                            enableProceedButton = false;
+                                          });
+                                        } else if (!isQRBottomSheet &&
+                                            isSMS &&
+                                            isAmountMoreThan2000 &&
+                                            !isMobileValid &&
+                                            _model.number.length < 10 &&
+                                            _model.number ==
+                                                "${FFAppState().phoneNumber}") {
+                                          print('afasfsafssss');
+
+                                          setState(() {
+                                            enableProceedButton = false;
+                                          });
+                                        } else if (isQRBottomSheet &&
+                                            isAmountMoreThan2000 &&
+                                            _model.nameTextFieldController.text
+                                                    .length <
+                                                3) {
+                                          print('afasfsafs6');
+
+                                          setState(() {
+                                            enableProceedButton = false;
+                                          });
+                                        } else if (isLessThanOne) {
+                                          print('afasfsafs7');
+
+                                          setState(() {
+                                            enableProceedButton = false;
+                                          });
+                                        } else {
+                                          print('afasfsafs8');
+
+                                          setState(() {
+                                            enableProceedButton = true;
+                                          });
+                                        }
+                                        await trackMixpanelEvent([
+                                          "FormFieldTitle","FormFieldValue", "FormMessage","ErrorMessage","ScreenType", "ScreenName", "PreviousScreen"
+                                        ], [
+                                          "Enter amount",
+                                          _model.amountTextFieldController.text,
+                                          widget.typeOfRequest!,
+                                          (_model.amountTextFieldController.text
+                                                      .isNotEmpty &&
+                                                  currentAmount > 2000)
+                                              ? "Amount cannot be more than ₹2000"
+                                              : "",
+                                          "modal",
+                                          "Enter link details",
+                                          "dashboard",
+                                        ], "payments_enter_details_form_field");
+                                      }
+                                      setState(() {});
+                                     
+                                    },
+                                    maxLength: 9,
+                                    autofocus: true,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      labelText:
+                                          FFLocalizations.of(context).getText(
+                                        'fpabn6mq' /* Enter amount */,
+                                      ),
+                                      labelStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily:
+                                                FlutterFlowTheme.of(context)
+                                                    .labelMediumFamily,
+                                            color: Color(0xFF979CAE),
+                                            letterSpacing: 0.32,
+                                            fontWeight: FontWeight.w600,
+                                            useGoogleFonts: GoogleFonts.asMap()
+                                                .containsKey(
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMediumFamily),
+                                            lineHeight: 1.3,
+                                          ),
+                                      hintStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),       ),
+                                      errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFD34528),
+                                        ),
+                                      ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0)),
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFD34528),
+                                        ),
+                                      ),
+                                      contentPadding:
+                                          EdgeInsetsDirectional.fromSTEB(
+                                              10.0, 0.0, 0.0, 0.0),
+                                      filled: true,
+                                      fillColor: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                    ),
+                                    style:
+                                        FlutterFlowTheme.of(context).bodyMedium,
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    validator: _model
+                                        .amountTextFieldControllerValidator
+                                        .asValidator(context),
+                                    inputFormatters: [
+                                        RegExp(r'^0+'),
+                                      ),
+                                      DecimalTextInputFormatter(
+                                          decimalRange: 2),
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r"[0-9.,]")),
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r"[.]{2,3}")),
+                                    ],),), ),
+                              if (_model.amountTextFieldController.text
+                                      .isNotEmpty &&
+                                  currentAmount > 2000)
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 6.0, 0.0, 2.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            1.33, 0.0, 0.0, 0.0),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: SvgPicture.asset(
+                                            'packages/upi_plugin/assets/images/Diagonal_exclamation.svg',
+                                            width: 13.34,
+                                            height: 13.34,
+                                            fit: BoxFit.cover,
+                                          ),),),
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            9.33, 0.0, 0.0, 0.0),
+                                        child: Text(
+                                          FFLocalizations.of(context).getText(
+                                            'n3yja4y9' /* Amount cannot be more than ₹2... */,
+                                          ),
+                                          style: GoogleFonts.anekLatin(
+                                            color: Color(0xFFD34528),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12.0,
+                                            height: 0.2,
+                                          ),),),],), ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 16.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    if (_model.formKey.currentState == null ||
+                                        !_model.formKey.currentState!
+                                            .validate()) {
+                                      return;
+                                    }},
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 48.0,
+                                    decoration: BoxDecoration(
+                                      color: buttonColor(),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: InkWell(
+                                      splashColor: Colors.transparent,
+                                      focusColor: Colors.transparent,
+                                      hoverColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onTap: (!enableProceedButton)
+                                          ? null
+                                          : () async {
+                                              print('ffffffffff');
+                                              if (isQRBottomSheet) {
+                                                print("qr code here");
+                                                if (_model
+                                                        .amountTextFieldController
+                                                        .text
+                                                        .isNotEmpty &&
+                                                    currentAmount <= 2000 &&
+                                                    (enableProceedButton)) {                                             
+
+                                                  var txnRefId = FFAppState()
+                                                          .vpa
+                                                          .contains(
+                                                              StringsConfig
+                                                                  .atICICI)
+                                                      ? 'ICI' +
+                                                          Uuid()
+                                                              .v1()
+                                                              .toUpperCase()
+                                                              .replaceAll(
+                                                                  '-', '')
+                                                      : 'IDFAB' +
+                                                          Uuid()
+                                                              .v1()
+                                                              .toUpperCase()
+                                                              .replaceAll(
+                                                                  '-', '');
+                                                  if (FFAppState().vpa.contains(
+                                                      StringsConfig.atIDFC)) {
+                                                    txnRefId =
+                                                        txnRefId.substring(
+                                                            0,
+                                                            txnRefId.length -
+                                                                3);
+                                                  }
+                                                  String intentUri = functions
+                                                      .generateIntentLink(
+                                                          FFAppState()
+                                                              .primaryAccountHolderName, //getJsonField(_model.selectedUserAccount, r'''$.bankName''').toString(),
+                                                          FFAppState()
+                                                              .primaryvpa, //getJsonField(_model.selectedUserAccount, r'''$.vpa''').toString(),
+                                                          (currentAmount
+                                                                  .toStringAsFixed(
+                                                                      2)
+                                                                  .contains(
+                                                                      '₹'))
+                                                              ? currentAmount
+                                                                  .toStringAsFixed(
+                                                                      2)
+                                                                  .toString()
+                                                                  .replaceAll(
+                                                                      '₹', '')
+                                                              : currentAmount
+                                                                  .toStringAsFixed(
+                                                                      2)
+                                                                  .toString(),
+                                                          'INR',
+                                                          '05',
+                                                          '00',
+                                                          '0000',
+                                                          FFAppState()
+                                                              .primaryAccountIFSC, //getJsonField(_model.selectedUserAccount, r'''$.ifsc''').toString()
+                                                          '000000',
+                                                          (_model.nameTextFieldController
+                                                                      .text ==
+                                                                  '')
+                                                              ? 'NA'
+                                                              : _model
+                                                                  .nameTextFieldController
+                                                                  .text,
+                                                          txnRefId,
+                                                          '');
+                                                  Map<String, String> map = {
+                                                    "intent": intentUri
+                                                  };
+                                                  String intentURLSigned =
+                                                      await platform
+                                                          .invokeMethod(
+                                                              SIGNED_INTENT,
+                                                              map);
+                                                  print(
+                                                      'SIGNED_INTENT: ${intentURLSigned}');
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    PageTransition(
+                                                      type: PageTransitionType
+                                                          .rightToLeft,
+                                                      duration: Duration(
+                                                          milliseconds: 300),
+                                                      reverseDuration: Duration(
+                                                          milliseconds: 300),
+                                                      child: QRGeneratorWidget(
+                                                        bankLogoUrl: getJsonField(
+                                                                    FFAppState()
+                                                                            .bankAccounts[
+                                                                        0],
+                                                                    r'''$.bankUrl''') !=
+                                                                ""
+                                                            ? getJsonField(
+                                                                    FFAppState()
+                                                                        .bankAccounts[0],
+                                                                    r'''$.bankUrl''')
+                                                                .toString()
+                                                            : "",
+                                                        barcodeData:
+                                                            intentURLSigned,
+                                                        bankName: getJsonField(
+                                                          FFAppState()
+                                                              .bankAccounts[0],
+                                                          r'''$.bankName''',
+                                                        ).toString(),
+                                                        maskedAccount:
+                                                            getJsonField(
+                                                          FFAppState()
+                                                              .bankAccounts[0],
+                                                          r'''$.masked''',
+                                                        ).toString(),
+                                                        payerVpa: "",
+                                                        remarks: _model
+                                                            .nameTextFieldController
+                                                            .text,
+                                                        payeeVpa: getJsonField(
+                                                          FFAppState()
+                                                              .bankAccounts[0],
+                                                          r'''$.vpa''',
+                                                        ).toString(),
+                                                        payeeName: getJsonField(
+                                                          FFAppState()
+                                                              .bankAccounts[0],
+                                                          r'''$.bankName''',
+                                                        ).toString(),
+                                                        upiId: getJsonField(
+                                                          FFAppState()
+                                                              .bankAccounts[0],
+                                                          r'''$.vpa''',
+                                                        ).toString(),
+                                                        upiRefId: txnRefId,
+                                                      ),  ),);}} else {
+                                                if (!isSMS &&
+                                                    _model.nameTextFieldController
+                                                        .text.isNotEmpty &&
+                                                    _model.nameTextFieldController
+                                                            .text.length >=
+                                                        3 &&
+                                                    _model.number.isNotEmpty &&
+                                                    _model.number.length >=
+                                                        10 &&
+                                                    _model
+                                                        .amountTextFieldController
+                                                        .text
+                                                        .isNotEmpty &&
+                                                    currentAmount <= 2000 &&
+                                                    isMobileValid &&
+                                                    (enableProceedButton &&
+                                                        _model.number !=
+                                                            "${FFAppState().phoneNumber}")) {
+                                                  await trackMixpanelEvent([
+                                                    "ctaText", "FormName", "ScreenType","ScreenName",  "PreviousScreen"
+                                                  ], [
+                                                    "Request moeny",
+                                                    widget.typeOfRequest!,
+                                                    "modal",  "Enter link details","dashboard",], "payments_enter_details_continue");
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    PageTransition(
+                                                        type: PageTransitionType
+                                                            .rightToLeft,
+                                                        duration: Duration(
+                                                            milliseconds: 300),
+                                                        reverseDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        child:
+                                                            ReceivingFromDetailsDisplayWidget(
+                                                          amount: currentAmount
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          remark: '',
+                                                          payerVpa: '',
+                                                          payerName: _model
+                                                              .nameTextFieldController
+                                                              .text,
+                                                          typeOfRequest: widget
+                                                              .typeOfRequest,
+                                                          payerPhoneNo:
+                                                              _model.number,
+                                                        )), );
+                                                } else if (isSMS &&
+                                                    _model.number.isNotEmpty &&
+                                                    _model.number.length >=
+                                                        10 &&
+                                                    _model
+                                                        .amountTextFieldController
+                                                        .text
+                                                        .isNotEmpty &&
+                                                    currentAmount <= 2000 &&
+                                                    isMobileValid &&
+                                                    (enableProceedButton &&
+                                                        _model.number !=
+                                                            "${FFAppState().phoneNumber}")) {
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    PageTransition(
+                                                        type: PageTransitionType
+                                                            .rightToLeft,
+                                                        duration: Duration(
+                                                            milliseconds: 300),
+                                                        reverseDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        child:
+                                                            ReceivingFromDetailsDisplayWidget(
+                                                          amount: currentAmount
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          remark: _model
+                                                              .nameTextFieldController
+                                                              .text,
+                                                          payerVpa: '',
+                                                          payerName: _model
+                                                              .nameTextFieldController
+                                                              .text,
+                                                          typeOfRequest: widget
+                                                              .typeOfRequest,
+                                                          payerPhoneNo:
+                                                              _model.number,
+                                                        )
+                                                     ),
+                                                  );} else {}
+                                              }     },
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    32.0, 0.0, 0.0, 0.0),
+                                            child: Text(
+                                              FFLocalizations.of(context)
+                                                  .getText(
+                                                '8kdfngin' /* Request money */,
+                                              ),
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    fontFamily: 'Anek Latin',
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryBackground,
+                                                    fontWeight: FontWeight.bold,
+                                                    useGoogleFonts: GoogleFonts
+                                                            .asMap()
+                                                        .containsKey(
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodyMediumFamily),
+                                                    lineHeight: 1.22,
+                                                  ),), ),
+                                          Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0.0, 0.0, 40.0, 0.0),
+                                            child: Icon(
+                                              Icons.keyboard_arrow_right,
+                                              color: Colors.white,
+                                              size: 24.0,
+                                            ),),],),),),),),],),),),),),),], ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 102.0,
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    focusColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () async {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              4.0, 0.0, 0.0, 0.0),
+                          child: Icon(
+                            Icons.keyboard_arrow_left,
+                            color: Color(0xFFC7222A),
+                            size: 24.0,
+                          ), ),
+                        Expanded(
+                          child: Align(
+                            alignment: AlignmentDirectional(-1.0, 0.0),
+                            child: Text(
+                              FFLocalizations.of(context).getText(
+                                '3yk0xv38' /* Go Back */,
+                              ),
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Anek Latin',
+                                    color: Color(0xFFC7222A),
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold,
+                                    useGoogleFonts: GoogleFonts.asMap()
+                                        .containsKey(
+                                            FlutterFlowTheme.of(context)
+                                                .bodyMediumFamily),
+                                  )), ),), ], ), ),),],), ],),), ); }
+  Color buttonColor() {
+    print(isMobileValid);
+    if (!isQRBottomSheet &&
+        !isSMS &&
+        _model.nameTextFieldController.text.isNotEmpty &&  _model.nameTextFieldController.text.length >= 3 &&   _model.number.isNotEmpty &&_model.number.length >= 10 &&
+        _model.number != "${FFAppState().phoneNumber}" && _model.amountTextFieldController.text.isNotEmpty && currentAmount <= 2000 && isMobileValid &&
+        enableProceedButton) {
+      print('sadasdas');
+      return Color(0xFFC7222A);
+    } else if (!isQRBottomSheet &&
+        isSMS &&
+        _model.number.isNotEmpty &&
+        _model.number.length >= 10 &&
+        _model.number != "${FFAppState().phoneNumber}" &&
+        _model.amountTextFieldController.text.isNotEmpty &&
+        currentAmount <= 2000 &&
+        isMobileValid &&
+        enableProceedButton) {
+      print('sadasdas1');
+      return Color(0xFFC7222A);
+    } else if (isQRBottomSheet &&
+        _model.amountTextFieldController.text.isNotEmpty &&
+        currentAmount <= 2000 &&
+        enableProceedButton) {
+      print('sadasdas4');
+      return Color(0xFFC7222A);
+    } else {
+      print('sadasdas5');
+      return Color(0xFFAFB3C0); }}
+  @override
+  void dispose() {
+    _model.maybeDispose();
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();}
+  @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+    isQRBottomSheet = (widget.typeOfRequest!.toUpperCase() == 'QR'); isSMS = (widget.typeOfRequest!.toUpperCase() == 'SMS'); _model = createModel(context, () => EnterLinkDetailsModel()); _model.nameTextFieldController ??= TextEditingController(); _model.numberTextFieldController ??= TextEditingController(); _model.amountTextFieldController ??= TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }}

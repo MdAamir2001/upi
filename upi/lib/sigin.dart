@@ -32,6 +32,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final border= OutlineInputBorder(
+      b
+    )
     return Scaffold(
       appBar: AppBar(
         title: Text('Sign In'),
