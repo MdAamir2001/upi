@@ -1,0 +1,4 @@
+#Mon Mar 04 11:50:36 IST 2024
+base.0=C\:\\Users\\deepthi.op\\StudioProjects\\practice\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
