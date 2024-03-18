@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "825185799274",
+    "project_id": "upi1-95a79",
+    "storage_bucket": "upi1-95a79.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825185799274:android:330341692cce7ed7cdce13",
+        "android_client_info": {
+          "package_name": "com.example.upi_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-4UwZqVZKa3axkdwC_pOPqaNyQ8vUOZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
